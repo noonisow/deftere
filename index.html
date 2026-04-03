@@ -297,15 +297,15 @@ function saveData(data){
 	localStorage.setItem('dictionnaire', data );
 }
 
-	console.log(filename);
-/*
+console.log(filename);
+
 fetch(filename).then(response => {
   if (!response.ok) throw new Error('Erreur réseau');
   return response.text();
   }).then(data => {
-		saveData( data );
+		texte = data;	
+	//saveData( data );
   }).catch(err => console.error(err));
-*/
 /*
 const picker = document.createElement('input');
 picker.type = 'file';
@@ -321,7 +321,7 @@ picker.onchange = (e) => {
 };
 */
 
-	texte = loadData();
+	//texte = loadData();
 	//console.log(texte.length);
 	variables["texte"] = texte;
 	liste = texte.split('\n');
