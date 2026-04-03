@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deftere</title>
+
+<link id="ic"  rel="shortcut icon" href = "icons/kudhol1.svg" type="images/png" >
+</head>
+<body>
+
+
+<ul>
+    <li><button id = "btn-menu" class ="Dictionnaire" onclick="Dictionnaire_innitialize();">DICTIONNAIRE</button></li>
+    <li><button id = "btn-menu" class = "Notes" onclick="Notes_innitialize()">NOTES</button></li>
+    <li><button id = "btn-menu" class = "Deftere" onclick="Deftere_innitialize()">DEFTE</button></li>
+  </ul>
+<div id = "main" class = "main"><p>PULAAR KO ƊOO IAHRATEE</p></div>
+
+<style>
+	button{background:#eee; }
+	button:hover{background:#ddd; outline: none;}
+		#btn-menu { border-color:#fff; padding: 8px ; padding-left: 8px; padding-right: 8px; border: none;}
+    ul {
+      list-style: none; 
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background: #fff;
+    }
+    li {
+      margin: 0;
+      background: #fff;
+		 	font-family:Verdana, BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", "sans-serif" ;
+}
+
+p{ font-family:Verdana, BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", "sans-serif" ; 
+font-size: 13px;}
+textarea{font-family:Verdana, BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", "sans-serif" ;}
+</style>
+
+<script>
+
+var variables = {
+	"history":{},
+	"main":`<p>PULAAR KO ƊOO IAHRATEE</p>`,
+	"dictionnaire":`
+<p>DICTIONNAIRE</p><p id = "dictionnaire"><input id="input" type="search" placeholder=" uinndu << KUDHOL >> " ><button id = "submit">search</button></p><div id = "page" style='font-family: Arial, sans-serif;'>DEFTERE TIMMUNDE FOF KO DICTIONNAIRE</div>
+<style id = "dictionnaire-style">
+	#btn{ background:#fff; border-color:#fff; padding: 2px ; padding-left: 3px; padding-right: 3px; border:None; outline: None; }
+	#btn:hover{background:#eee; outline: none;}
+	.query{color:#08f;}
+	#suggestions{	font-family:Verdana, BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;}
+	#phrase{padding-bottom:7px;}
+</style>
+`,
+	"notes":`
+<p>NOTES</p>
+<div class="container">
+<div class="notes">
+	<textarea spellcheck="false" id="notes" placeholder="K 'uinndu'a dhoo fof maa ialtu dhoo .
+S uelii ma , uinndu bh dh gh jh bbh ddh ggh jjh"></textarea>
+	<button onclick="downloadNotes()">Download Notes</button>
+	<button onclick="Convert('machine')">machine</button>
+	<button onclick="Convert('portable')">portable</button>
+	<button onclick="Convert('junngo')">junngo</button>
+	<button onclick="navigator.clipboard.writeText(document.getElementById('page').innerHTML.replaceAll('<br>','\n'))">copy text</button>
+</div>
+<div class="display"><p class = "machine" id = "page" ></p></div>
+</div>
+<style id = "notes-style" >
+		.container{display:flex;height: 100%;}
+		.notes{flex:1; }
+		.display{flex:1; margin-left:5px}
+    textarea{ width: 98%; height:90%;}
+	#btn{ background:#fff; border-color:#fff; padding: 2px ; padding-left: 3px; padding-right: 3px; border:None; outline: None; }
+	#btn:hover{background:#eee; outline: none;}
+	.query{color:#08f;}
+	#suggestions{	font-family:Verdana, BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;}
+	#phrase{padding-bottom:7px;}
+</style>
+`,
+	"deftere":`
+<p>DEFTE</p>
+<style id = "deftere-style">
+</style>
+`,
+	"notesList":`K 'uinndu'a dhoo fof maa ialtu dhoo .
+S uelii ma , uinndu bh dh gh jh bbh ddh ggh jjh`,
+	"defte":[],
+	"list_of_words":[],
+}
+
+var texte = "";
+var liste = "";
+//var set_of_words = "";
+var phrases = "";
+//var lines = 10
+var filename = "dictionnaire.txt"
+const c1 = ["Jjh", "Bbh", "Ddh", "Ggh", "Jh", "Bh", "Dh", "Gh", "Qq", "Q", "Nny", "Ny"," '", "' ","'a","'en","'o","'on"]
+const c2 = ["Ƴƴ" , "Ɓɓ" , "Ɗɗ" , "Ɠɠ" , "Ƴ" , "Ɓ" , "Ɗ" , "Ɠ" , "Ŋŋ", "Ŋ", "Ññ" , "Ñ" ," ʽ", "ʼ ","ʼa","ʼen","ʼo","ʼon"]
+const v1 = ["Aa", "Oo", "Ii", "Ee", "Uu", "Yi", "YI", "Wu", "WU"]
+const v2 = ["Â" , "Ô" , "Î" , "Ê" , "Û" , "Ŷ" , "Ŷ" , "Ŵ" , "Ŵ" ]
+const vs = {
+		'machine':Inter([...c2,...v2], [...c1,...v1]),
+		'junngo':Inter([...c1,...v1], [...c2,...v2]),
+		'portable':Inter([...c1,...v2], [...c2,...v1])
+	}
+
+function Deftere_innitialize(){
+	main = document.getElementById('main').innerHTML = variables["deftere"];
+}
+
+function downloadNotes() {
+      const blob = new Blob([variables["notesList"]], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "notes.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+}
+
+function Notes_innitialize(){
+
+	document.getElementById('main').innerHTML = variables["notes"];
+	const textarea = document.getElementById("notes");
+	textarea.innerHTML = variables["notesList"];
+	Convert('portable');
+
+	textarea.addEventListener("input", function() {
+		variables["notesList"] = textarea.value;
+	  //this.style.height = "auto";
+	  //this.style.height = this.scrollHeight + "px";
+		Convert('portable');
+	});
+
+}
+
+	function Inter(X,Y){return X.map((x,i)=>{return[x, Y[i]];}); }
+
+	function Pulaar(n,x){
+		for (v of vs[n]){ x = x.replaceAll(v[0],v[1]) ; x = x.replaceAll(v[0].toLowerCase(),v[1].toLowerCase())}
+		return x//.replaceAll("\n","<br>");
+	}
+	function Convert(pulaar){
+		phrases = Pulaar( pulaar , variables["notesList"] ).split("\n");
+		fill(phrases,0,phrases.at(-1).split(" ").at(-1) , 32 );
+	}
+
+function Dictionnaire_innitialize(){
+
+document.getElementById('main').innerHTML = variables["dictionnaire"];
+
+const submit = document.getElementById("submit");
+const input = document.getElementById("input");
+const suggestions = document.getElementById("page");
+submit.addEventListener( "click", function(){ Submit(submit);});
+input.addEventListener("keydown", function(e) {if (e.key === "Enter") {
+	if (input.value){Submit(submit);}else{Search_history();}
+}});
+
+function Search_history(){
+		suggestions.innerHTML = "";
+		const history = variables["history"];
+		if (!input.value){
+	  suggestions.innerHTML = "";
+    Object.keys(history).forEach(word => {
+      const btn = document.createElement("button");
+      btn.textContent = word;
+      btn.style.color = "#08f";
+      //btn.style.display = "block"; // each button on new line
+      btn.id = "btn";
+      btn.addEventListener( "click", function(){ find(btn);});
+      suggestions.appendChild(btn);
+	});
+	}
+}
+
+input.addEventListener("input", () => {
+suggestions.innerHTML = "";
+const value = input.value.toLowerCase();
+  if (value) {
+    const filtered = variables["list_of_words"].filter(word => word.startsWith(value) ).slice(0,20);
+    filtered.forEach(word => {
+      const btn = document.createElement("button");
+      btn.textContent = word;
+      btn.style.display = "block"; // each button on new line
+      btn.id = "btn";
+      btn.addEventListener( "click", function(){ find(btn);});
+      suggestions.appendChild(btn);
+    });
+  }else{Search_history();}
+});
+}
+
+/**
+font-family: Arial - Helvetica - Times New Roman - Georgia - Verdana - Courier New ...
+Verdana, BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+font-weight: normal - bold - 100 - 900 - ...
+**/
+
+function search( queries ){
+	var queries = queries.toLowerCase().trim().split(' ').reverse()
+	var phrases = liste.map(phrase => phrase.slice(0,-1))
+
+	for ( query of queries ){
+		phrases = phrases.filter( (phrase) => phrase.toLowerCase().includes(query)).sort( (phrase) => phrase.indexOf(query) )
+	}
+	return phrases;
+}
+
+function Submit(b){
+	b.innerHTML = document.getElementById("input").value;
+	find( b );
+	b.innerHTML = "submit";
+}
+
+function Add( condition ){
+	if ( condition ){ return `class = "query"` }
+	return ``;
+}
+
+function Split( paragraphe , queries ){
+		innerHTML = ``;
+		var queries = queries.toLowerCase().trim().split(' ')
+		for( word of paragraphe.split(' ') ){
+			to_add = Add( queries.includes(word.toLowerCase()) )
+			innerHTML += `<button id = "btn" ${to_add} >${word}</button>`;
+		}
+		return innerHTML;
+}
+
+function paragraphes( phrases , queries ){
+	var paragraphes = `<button id = "back"><...caggal</button><button id = "next">ieeso...></button>`
+
+	for ( phrase of phrases ){
+		paragraphes += `<div id="phrase">${ Split( phrase , queries )}</div>`;
+	}
+	return paragraphes;
+}
+
+function fill( phrases , indexes , queries , lines = 10 ){
+	const page = document.getElementById( "page" );
+	display = phrases.slice( indexes , indexes+lines )
+	page.innerHTML = paragraphes( display , queries );
+	b = document.getElementById("back");
+	b.addEventListener( "click", function(){ prev_page( phrases , queries , lines );});
+	b = document.getElementById("next");
+	b.addEventListener( "click", function(){ next_page( phrases , queries , lines );});
+
+	for ( b of document.querySelectorAll("#btn") ){
+		b.addEventListener( "click", function(){ 
+			Dictionnaire_innitialize();
+			find(this);
+		});
+	}
+}
+
+function find( button ){
+	queries = button.innerHTML.toLowerCase();
+	const history = variables["history"];
+	indexes = history[queries];
+	if (indexes === undefined ){indexes=0;}
+	history[queries] = indexes;
+	document.getElementById("input").value = queries;
+	phrases = search( queries ); // ko dhooyenne
+	fill( phrases , indexes , queries );
+}
+
+function next_page( phrases , queries , lines ){
+	const history = variables["history"];
+	indexes = history[queries] + lines;
+	if ( indexes-lines >= phrases.length ){return false;}
+	history[queries] = indexes;
+	fill( phrases , indexes , queries );
+}
+
+function prev_page( phrases , queries , lines ){
+	const history = variables["history"];
+	indexes = history[queries] - lines;
+	if ( indexes+lines < 1 ){return false;}
+	history[queries] = indexes;
+	fill( phrases , indexes , queries );
+}
+
+
+function loadData(){
+  const raw = localStorage.getItem('dictionnaire');
+  if(!raw) return "";
+  try { return raw; } catch(e){ return ""; }
+}
+
+function saveData(data){
+	//localStorage.clear()
+	localStorage.setItem('dictionnaire', data );
+}
+
+	console.log(filename);
+/*
+fetch(filename).then(response => {
+  if (!response.ok) throw new Error('Erreur réseau');
+  return response.text();
+  }).then(data => {
+		saveData( data );
+  }).catch(err => console.error(err));
+*/
+/*
+const picker = document.createElement('input');
+picker.type = 'file';
+document.getElementById("main").appendChild(picker);
+picker.onchange = (e) => {
+  const file = e.target.files[0];    // Get the file
+  const reader = new FileReader();   // Create the reader
+  reader.onload = () => {
+    data = reader.result;
+		saveData( data );
+  };
+  reader.readAsText(file);           // Start reading
+};
+*/
+
+	texte = loadData();
+	//console.log(texte.length);
+	variables["texte"] = texte;
+	liste = texte.split('\n');
+
+	const set_of_words = new Set( texte.split(" ") );
+	var list_of_words = variables["list_of_words"];
+	set_of_words.forEach(v =>list_of_words.push( v ));
+	
+	//console.log( variables["list_of_words"].length);
+
+
+</script>
+
+</body>
+</html>
